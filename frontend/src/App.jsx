@@ -26,20 +26,17 @@ export default function App() {
       localStorage.setItem("userId", id)
     }
     setUserId(id)
-  }, [])
 
-  useEffect(() => {
-    if (!userId) return
     const fetchTodos = async () => {
       try {
-        const res = await axios.get(`/api/todos?userId=${userId}`)
+        const res = await axios.get(`/api/todos?userId=${id}`)
         setTodos(res.data)
       } catch (err) {
         console.error("Error fetching todos:", err)
       }
     }
     fetchTodos()
-  }, [userId])
+  }, [])
 
   const addTodo = async (e) => {
     e.preventDefault()
