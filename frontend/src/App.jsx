@@ -14,7 +14,15 @@ export default function App() {
   useEffect(() => {
     let id = localStorage.getItem("userId")
     if (!id) {
-      id = crypto.randomUUID()
+      if (typeof window !== "undefined" && window.crypto?.randomUUID) {
+        id = window.crypto.randomUUID()
+      } else {
+        id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+          const r = Math.random() * 16 | 0
+          const v = c === 'x' ? r : (r & 0x3 | 0x8)
+          return v.toString(16)
+        })
+      }
       localStorage.setItem("userId", id)
     }
     setUserId(id)
@@ -145,8 +153,7 @@ export default function App() {
                         {todo.completed && <MdOutlineDone className='text-white text-sm' />}
                       </button>
                       <span
-                        className={`text-gray-800 font-medium ${todo.completed ? 'line-through text-gray-400' : ''
-                          }`}
+                        className={`text-gray-800 font-medium ${todo.completed ? 'line-through text-gray-400' : ''}`}
                       >
                         {todo.text}
                       </span>
