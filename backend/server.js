@@ -16,7 +16,16 @@ app.use(express.json())
 
 app.use("/api/todos", todoRoutes);
 
-app.listen(PORT, () => {
-    connectDB();
-    console.log(`Server started at http://localhost:${PORT}`)
-})
+const startServer = async () => {
+    try {
+        await connectDB();
+        app.listen(PORT, () => {
+            console.log(`Server started at http://localhost:${PORT}`);
+        });
+    } catch (err) {
+        console.error("Failed to connect to MongoDB:", err);
+        process.exit(1);
+    }
+};
+
+startServer();

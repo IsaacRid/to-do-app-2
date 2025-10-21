@@ -27,7 +27,7 @@ router.post("/", async (req, res) => {
 })
 
 // Update a todo (text or completed)
-router.patch("/:id ", async (req, res) => {
+router.patch("/:id", async (req, res) => {
     try {
         const todo = await Todo.findById(req.params.id);
         if (!todo) return res.status(404).json({ message: "Todo not found" });
