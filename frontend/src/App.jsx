@@ -9,24 +9,35 @@ export default function App() {
   const [todos, setTodos] = useState([])
   const [editingTodo, setEditingTodo] = useState(null)
   const [editedText, setEditedText] = useState("")
+  const [userId, setUserId] = useState(null)
 
   useEffect(() => {
+    let id = localStorage.getItem("userId")
+    if (!id) {
+      id = crypto.randomUUID()
+      localStorage.setItem("userId", id)
+    }
+    setUserId(id)
+  }, [])
+
+  useEffect(() => {
+    if (!userId) return
     const fetchTodos = async () => {
       try {
-        const res = await axios.get("/api/todos")
+        const res = await axios.get(`/api/todos?userId=${userId}`)
         setTodos(res.data)
       } catch (err) {
         console.error("Error fetching todos:", err)
       }
     }
     fetchTodos()
-  }, [])
+  }, [userId])
 
   const addTodo = async (e) => {
     e.preventDefault()
     if (!newTodo.trim()) return
     try {
-      const res = await axios.post("/api/todos", { text: newTodo })
+      const res = await axios.post("/api/todos", { text: newTodo, userId })
       setTodos([...todos, res.data])
       setNewTodo("")
     } catch (err) {
@@ -41,7 +52,7 @@ export default function App() {
 
   const saveEdit = async (id) => {
     try {
-      const res = await axios.patch(`/api/todos/${id}`, { text: editedText })
+      const res = await axios.patch(`/api/todos/${id}`, { text: editedText, userId })
       setTodos(todos.map((t) => (t._id === id ? res.data : t)))
       setEditingTodo(null)
       setEditedText("")
@@ -52,7 +63,7 @@ export default function App() {
 
   const deleteTodo = async (id) => {
     try {
-      await axios.delete(`/api/todos/${id}`)
+      await axios.delete(`/api/todos/${id}`, { data: { userId } })
       setTodos(todos.filter((t) => t._id !== id))
     } catch (err) {
       console.error("Error deleting todo:", err)
@@ -61,7 +72,7 @@ export default function App() {
 
   const toggleComplete = async (todo) => {
     try {
-      const res = await axios.patch(`/api/todos/${todo._id}`, { completed: !todo.completed })
+      const res = await axios.patch(`/api/todos/${todo._id}`, { completed: !todo.completed, userId })
       setTodos(todos.map((t) => (t._id === todo._id ? res.data : t)))
     } catch (err) {
       console.error("Error toggling completion:", err)
@@ -93,7 +104,6 @@ export default function App() {
             Add Task
           </button>
         </form>
-
 
         <div className='mt-6 space-y-3'>
           {todos.length === 0 ? (

@@ -1,12 +1,14 @@
-import express from "express";
+import express from "express"
 import Todo from "../models/todo.model.js"
 
-const router = express.Router();
+const router = express.Router()
 
-// Get all todos
+// Get all todos for a specific user
 router.get("/", async (req, res) => {
     try {
-        const todos = await Todo.find()
+        const { userId } = req.query
+        if (!userId) return res.status(400).json({ message: "userId is required" })
+        const todos = await Todo.find({ userId })
         res.json(todos)
     } catch (err) {
         res.status(500).json({ message: err.message })
@@ -15,11 +17,11 @@ router.get("/", async (req, res) => {
 
 // Add a new todo
 router.post("/", async (req, res) => {
-    const todo = new Todo({
-        text: req.body.text
-    })
     try {
-        const newTodo = await todo.save();
+        const { text, userId } = req.body
+        if (!userId) return res.status(400).json({ message: "userId is required" })
+        const todo = new Todo({ text, userId })
+        const newTodo = await todo.save()
         res.status(201).json(newTodo)
     } catch (err) {
         res.status(400).json({ message: err.message })
@@ -29,29 +31,35 @@ router.post("/", async (req, res) => {
 // Update a todo (text or completed)
 router.patch("/:id", async (req, res) => {
     try {
-        const todo = await Todo.findById(req.params.id);
-        if (!todo) return res.status(404).json({ message: "Todo not found" });
+        const { userId } = req.body
+        if (!userId) return res.status(400).json({ message: "userId is required" })
 
-        if (req.body.text !== undefined) {
-            todo.text = req.body.text
-        }
-        if (req.body.completed !== undefined) {
-            todo.completed = req.body.completed
-        }
-        const updatedTodo = await todo.save();
+        const todo = await Todo.findOne({ _id: req.params.id, userId })
+        if (!todo) return res.status(404).json({ message: "Todo not found" })
+
+        if (req.body.text !== undefined) todo.text = req.body.text
+        if (req.body.completed !== undefined) todo.completed = req.body.completed
+
+        const updatedTodo = await todo.save()
         res.json(updatedTodo)
     } catch (err) {
         res.status(400).json({ message: err.message })
     }
 })
 
+// Delete a todo
 router.delete("/:id", async (req, res) => {
     try {
-        await Todo.findByIdAndDelete(req.params.id)
+        const { userId } = req.body
+        if (!userId) return res.status(400).json({ message: "userId is required" })
+
+        const todo = await Todo.findOneAndDelete({ _id: req.params.id, userId })
+        if (!todo) return res.status(404).json({ message: "Todo not found" })
+
         res.json({ message: "Todo deleted" })
     } catch (err) {
         res.status(500).json({ message: err.message })
     }
 })
 
-export default router;
+export default router
