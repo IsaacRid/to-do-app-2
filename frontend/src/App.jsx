@@ -77,22 +77,23 @@ export default function App() {
 
         <form
           onSubmit={addTodo}
-          className='flex items-center gap-2 shadow-sm border border-gray-200 p-2 rounded-lg'
+          className='flex flex-col sm:flex-row items-center gap-2 shadow-sm border border-gray-200 p-2 rounded-lg'
         >
           <input
             type='text'
             value={newTodo}
             onChange={(e) => setNewTodo(e.target.value)}
             placeholder='What needs to be done?'
-            className='flex-1 outline-none px-3 py-2 text-gray-700 placeholder-gray-400'
+            className='flex-1 outline-none px-3 py-2 text-gray-700 placeholder-gray-400 w-full'
           />
           <button
             type='submit'
-            className='bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded-md font-medium cursor-pointer'
+            className='bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded-md font-medium w-full sm:w-auto mt-2 sm:mt-0'
           >
             Add Task
           </button>
         </form>
+
 
         <div className='mt-6 space-y-3'>
           {todos.length === 0 ? (
