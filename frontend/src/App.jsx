@@ -5,6 +5,8 @@ import { FaTrash } from "react-icons/fa6"
 import axios from 'axios'
 
 export default function App() {
+
+
   const [newTodo, setNewTodo] = useState("")
   const [todos, setTodos] = useState([])
   const [editingTodo, setEditingTodo] = useState(null)
