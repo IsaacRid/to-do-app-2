@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import path from "path";
 
-dotenv.config({ path: path.resolve("/home/ubuntu/to-do-app-2/.env") });
+dotenv.config({ path: "../.env" });
 
 export const connectDB = async () => {
     try {
