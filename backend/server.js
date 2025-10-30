@@ -22,9 +22,11 @@ app.use("/api/todos", todoRoutes);
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static(join(__dirname, '../frontend/dist')));
 
-    app.get('/*', (req, res) => {
+    app.use((req, res) => {
         if (!req.path.startsWith('/api')) {
             res.sendFile(join(__dirname, '../frontend/dist/index.html'));
+        } else {
+            res.status(404).json({ message: 'API route not found' });
         }
     });
 }
