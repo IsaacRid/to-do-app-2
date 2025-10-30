@@ -1,14 +1,9 @@
 import mongoose from "mongoose";
-import dotenv from "dotenv";
-import path from "path";
-
-const envPath = path.resolve(process.cwd(), "../.env");
-dotenv.config({ path: envPath });
 
 export const connectDB = async () => {
     try {
         if (!process.env.MONGO_URI) {
-            console.error(`MONGO_URI is not defined. Loaded .env path: ${envPath}`);
+            console.error('MONGO_URI is not defined in environment variables');
             throw new Error("MONGO_URI is not defined in .env");
         }
 

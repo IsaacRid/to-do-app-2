@@ -2,19 +2,33 @@ import express from "express";
 import dotenv from "dotenv";
 import todoRoutes from "./routes/todo.route.js"
 import { connectDB } from "./config/db.js"
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import cors from 'cors';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 dotenv.config();
 
 const app = express()
-const PORT = 5000
+const PORT = process.env.PORT || 5000
 
-app.get("/", (req, res) => {
-    res.send("Server is ready")
-})
+app.use(cors());
+app.use(express.json());
 
-app.use(express.json())
-
+// API routes should be mounted before static files
 app.use("/api/todos", todoRoutes);
+
+// Serve static files in production
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(join(__dirname, '../frontend/dist')));
+
+    // Handle client-side routing in production
+    app.get('*', (req, res) => {
+        res.sendFile(join(__dirname, '../frontend/dist/index.html'));
+    });
+}
 
 const startServer = async () => {
     try {
