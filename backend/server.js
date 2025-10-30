@@ -17,14 +17,11 @@ const PORT = process.env.PORT || 5000
 app.use(cors());
 app.use(express.json());
 
-// API routes should be mounted before static files
 app.use("/api/todos", todoRoutes);
 
-// Serve static files in production
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static(join(__dirname, '../frontend/dist')));
 
-    // Handle client-side routing in production
     app.get('*', (req, res) => {
         res.sendFile(join(__dirname, '../frontend/dist/index.html'));
     });
